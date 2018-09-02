@@ -18,10 +18,12 @@ module.exports = function(app) {
 					res.json(data);
 				} else {
 					console.log('Via mongoose');
-					City.find({nome: cityName}).then((city) => {
+					City.find({nome: cityName})
+					.select('-_id')
+					.then((city) => {
 						if (city.length) {
-							client.set(cityName, city);
-							res.json(city);
+							client.set(cityName, city[0]);
+							res.json(city[0]);
 						} else {
 							console.log('via wikipedia');
 							try {
