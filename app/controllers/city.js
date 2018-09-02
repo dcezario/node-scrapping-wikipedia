@@ -1,39 +1,47 @@
 module.exports = function(app) {
 	let City = app.models.city;
-	let request = require('request');
-	const cheerio = require('cheerio');
-	const removeAccents = require('remove-accents');
+	const client = require('../../config/redis')();
+	const scrapper = require('../libs/scrap');
 
 	let controller = {
 		index: function(req, res) {
 			res.status(200);
-			res.end('teste');
 		},
-		city: function(req, res) {
-			const url = 'https://pt.wikipedia.org/wiki/';
+		city: function(req, res, next) {
 			const cityName = req.params.name.replace(/ /g,"_");
-			const searchUrl = url + cityName;
-			request(searchUrl, function(error, response, html) {
-				if (!error) {
-					let info = {};
-					let $ = cheerio.load(html);
-					$('.infobox tr').each(function() {
-						let title = $(this).children('th').first().text().replace("\n","");
-						let data = $(this).children('td').first().text().replace("\n","");
-						if (title !== '') {
-							let newData = removeAccents(data);
-							let newTitle = removeAccents(title).toLowerCase().replace(/ /g,"_");
-							newTitle = newTitle.replace('-','_');
-							newTitle = newTitle.replace('(a)','');
-							info[`${newTitle}`] = newData;
-						}
-					});
-					delete info['localizacao'];
-					res.json(info);
-				} else {
-					res.status(500).send("An error occured");
+			client.get(cityName, function(err, data) {
+				if (err) {
+					console.log(err);
 				}
-			})
+				if (data) {
+					console.log('Via redis');
+					res.json(data);
+				} else {
+					console.log('Via mongoose');
+					City.find({nome: cityName}).then((city) => {
+						if (city.length) {
+							client.set(cityName, city);
+							res.json(city);
+						} else {
+							console.log('via wikipedia');
+							try {
+								let scrapResult = scrapper.scrap(cityName)
+								scrapResult.then(function(result) {
+									newCity = new City(result);
+									newCity.save(function(err) {
+										console.log(err);
+									});
+									res.json(result);
+								});
+							} catch(err) {
+								console.log(err);
+							}
+						}
+					}).catch((err) => {
+						res.json(err);
+					});
+				}
+			});
 		}
 	}
 	return controller;

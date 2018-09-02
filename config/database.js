@@ -3,6 +3,7 @@ const mongo = 'mongodb://mongo:27017/cidades';
 
 module.exports = function() {
 	mongoose.connect(mongo, {useNewUrlParser: true});
+	mongoose.set('debug', true);
 	mongoose.connection.on('connected', function() {
 		console.log('Mongoose connected');
 	});
