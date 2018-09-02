@@ -1,5 +1,9 @@
 ## Projeto de estudos sobre Node.js e web scrapping
 Esse projeto é apenas para estudos de Node.Js e outras ferramentas.
+A ideia é capturarmos as informações de cidades através de web scrapping das páginas da wikipedia.
+Na primeira solicitação, os dados serão inseridos buscados no mongodb.
+Nas próximas solicitações, as informações retornarão do mongodb ou do redis, dependendo do tempo entre cada request.
+
 ## Utilização:
 
     docker-compose up -d
