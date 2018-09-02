@@ -1,0 +1,22 @@
+{
+  "name": "scrap-node",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "express-load": "^1.1.16",
+    "http-errors": "~1.6.2",
+    "jade": "~1.11.0",
+    "mongoose": "^5.2.12",
+    "morgan": "~1.9.0",
+    "nodemon": "^1.18.4",
+    "remove-accents": "^0.4.2",
+    "request": "^2.88.0"
+  }
+}
