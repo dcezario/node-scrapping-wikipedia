@@ -33,6 +33,14 @@ module.exports = function() {
 		microregiao: {
 			type: String
 		},
+		lema: {
+			type: String,
+			required: false
+		},
+		padroeiro: {
+			type: String,
+			required: false
+		},
 		regiao_metropolitana: {
 			type: String
 		},

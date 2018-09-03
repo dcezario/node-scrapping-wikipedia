@@ -5,7 +5,7 @@ module.exports = function(app) {
 
 	let controller = {
 		index: function(req, res) {
-			res.status(200);
+			res.status(200).send('olar!');
 		},
 		city: function(req, res, next) {
 			const cityName = req.params.name.replace(/ /g,"_");
@@ -15,14 +15,17 @@ module.exports = function(app) {
 				}
 				if (data) {
 					console.log('Via redis');
-					res.json(data);
+					res.send(JSON.parse(data));
 				} else {
 					console.log('Via mongoose');
 					City.find({nome: cityName})
 					.select('-_id')
+					.select('-createdAt')
+					.select('-updatedAt')
+					.select('-__v')
 					.then((city) => {
 						if (city.length) {
-							client.set(cityName, city[0]);
+							client.set(cityName, JSON.stringify(city[0]));
 							res.json(city[0]);
 						} else {
 							console.log('via wikipedia');
@@ -34,6 +37,8 @@ module.exports = function(app) {
 										console.log(err);
 									});
 									res.json(result);
+								}).catch((err) => {
+									res.status(500).send(err);
 								});
 							} catch(err) {
 								console.log(err);
